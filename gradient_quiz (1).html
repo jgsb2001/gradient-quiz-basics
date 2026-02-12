@@ -1,0 +1,1172 @@
+	<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adobe Illustrator: Gradient Tool Quiz</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #FF6B35 0%, #FF0080 50%, #9D00FF 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #00FFFF, #FF00FF);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 25px;
+            line-height: 1.4;
+            color: #2d3748;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            padding: 18px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.05em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option:hover:not(.disabled) {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: #ebf8ff;
+            border-color: #4299e1;
+        }
+
+        .option.correct {
+            background: #c6f6d5;
+            border-color: #48bb78;
+            animation: correctPulse 0.5s ease;
+        }
+
+        .option.incorrect {
+            background: #fed7d7;
+            border-color: #f56565;
+            animation: shake 0.5s ease;
+        }
+
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .option-letter {
+            background: #667eea;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .option.correct .option-letter {
+            background: #48bb78;
+        }
+
+        .option.incorrect .option-letter {
+            background: #f56565;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #c6f6d5;
+            border-left: 4px solid #48bb78;
+        }
+
+        .feedback.incorrect {
+            background: #fed7d7;
+            border-left: 4px solid #f56565;
+        }
+
+        .feedback-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feedback-text {
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .feedback-tip {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 12px;
+            border-radius: 8px;
+            font-style: italic;
+            margin-top: 10px;
+        }
+
+        .feedback-tip strong {
+            color: #764ba2;
+        }
+
+        .next-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: none;
+        }
+
+        .next-button.show {
+            display: inline-block;
+        }
+
+        .next-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .next-button:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            text-align: center;
+            display: none;
+            padding: 20px 0;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        .results h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #FF6B35, #FF0080, #9D00FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-display {
+            font-size: 4em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00FFFF, #FF00FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+
+        .results-message {
+            font-size: 1.4em;
+            margin: 20px 0;
+            color: #2d3748;
+        }
+
+        .restart-button {
+            background: linear-gradient(135deg, #FF6B35, #FF0080);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .restart-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+        }
+
+        .transition-message {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+            animation: slideIn 0.5s ease;
+        }
+
+        .transition-message h3 {
+            font-size: 1.4em;
+            margin-bottom: 10px;
+        }
+
+        .transition-message p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .header p {
+                font-size: 0.9em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .question-text {
+                font-size: 1.1em;
+            }
+
+            .option {
+                padding: 14px 16px;
+                font-size: 0.95em;
+            }
+
+            .score-display {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Gradient Tool Quiz</h1>
+            <p>Adaptive quiz that adjusts to your skill level!</p>
+        </div>
+
+        <div class="content">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+
+            <div id="quizContent">
+                <!-- Questions will be inserted here -->
+            </div>
+
+            <div class="results" id="results">
+                <!-- Results will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // STUDENT INFORMATION AUTO-DETECTION
+        // ============================================
+        let studentInfo = {
+            name: '',
+            email: '',
+            source: 'manual' // Can be: 'google', 'url', 'localStorage', or 'manual'
+        };
+
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Function to save student info to localStorage
+        function saveStudentInfo(name, email) {
+            try {
+                localStorage.setItem('gradientQuizStudentName', name);
+                if (email) localStorage.setItem('gradientQuizStudentEmail', email);
+            } catch (e) {
+                console.log('localStorage not available');
+            }
+        }
+
+        // Function to load student info from localStorage
+        function loadFromLocalStorage() {
+            try {
+                const savedName = localStorage.getItem('gradientQuizStudentName');
+                const savedEmail = localStorage.getItem('gradientQuizStudentEmail');
+                if (savedName) {
+                    studentInfo.name = savedName;
+                    studentInfo.email = savedEmail || '';
+                    studentInfo.source = 'localStorage';
+                    return true;
+                }
+            } catch (e) {
+                console.log('localStorage not available');
+            }
+            return false;
+        }
+
+        // Google Sign-In callback
+        function handleCredentialResponse(response) {
+            try {
+                // Decode the JWT token to get user info
+                const responsePayload = parseJwt(response.credential);
+                studentInfo.name = responsePayload.name || '';
+                studentInfo.email = responsePayload.email || '';
+                studentInfo.source = 'google';
+                console.log('Google Sign-In detected:', studentInfo.email);
+                
+                // Save to localStorage for future use
+                saveStudentInfo(studentInfo.name, studentInfo.email);
+            } catch (e) {
+                console.log('Could not parse Google credential');
+            }
+        }
+
+        // Helper function to decode JWT
+        function parseJwt(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                return {};
+            }
+        }
+
+        // Initialize Google Sign-In (silent, non-intrusive)
+        window.onload = function() {
+            // First, check URL parameters
+            const urlName = getUrlParameter('name');
+            const urlEmail = getUrlParameter('email');
+            
+            if (urlName || urlEmail) {
+                studentInfo.name = urlName || '';
+                studentInfo.email = urlEmail || '';
+                studentInfo.source = 'url';
+                saveStudentInfo(studentInfo.name, studentInfo.email);
+            } 
+            // If no URL params, check localStorage
+            else if (!loadFromLocalStorage()) {
+                // Try to initialize Google Sign-In (optional - won't show popup)
+                if (typeof google !== 'undefined' && google.accounts) {
+                    try {
+                        google.accounts.id.initialize({
+                            client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com', // Teacher needs to replace this
+                            callback: handleCredentialResponse,
+                            auto_select: true,
+                            cancel_on_tap_outside: false
+                        });
+                        
+                        // Try to silently get credentials
+                        google.accounts.id.prompt((notification) => {
+                            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                                // Couldn't get Google sign-in, that's okay
+                            }
+                        });
+                    } catch (e) {
+                        console.log('Google Sign-In not available');
+                    }
+                }
+            }
+        };
+
+        // ============================================
+        // QUIZ DATA
+        // ============================================
+        // STARTER QUESTIONS - Everyone gets these first
+        const starterQuestions = [
+            {
+                question: "What is a gradient in Adobe Illustrator?",
+                options: [
+                    "A smooth blend between two or more colors",
+                    "A type of brush stroke",
+                    "A layer effect that adds shadows",
+                    "A tool for drawing straight lines"
+                ],
+                correct: 0,
+                explanation: "According to the lesson, a gradient is defined as 'a smooth blend between two or more colors' - like a sunset fading from orange to pink to purple.",
+                tip: "Think of gradients as smooth color transitions you see in nature, like sunsets or the sky!"
+            },
+            {
+                question: "What keyboard shortcut activates the Gradient Tool?",
+                options: [
+                    "V",
+                    "M",
+                    "G",
+                    "T"
+                ],
+                correct: 2,
+                explanation: "The keyboard shortcut for the Gradient Tool is 'G'. This is listed in the Essential Keyboard Shortcuts section of your lesson.",
+                tip: "Remember: G for Gradient! Keep your workflow fast by using keyboard shortcuts."
+            },
+            {
+                question: "What's the main difference between Linear and Radial gradients?",
+                options: [
+                    "Linear gradients use more colors than radial",
+                    "Linear blends in a straight line, Radial blends outward from a center point",
+                    "Radial gradients can only be applied to circles",
+                    "Linear gradients are faster to render"
+                ],
+                correct: 1,
+                explanation: "Linear gradients blend colors in a straight line (left-right, top-bottom, or any angle), while Radial gradients blend outward from a center point in circles - perfect for glows and spotlights.",
+                tip: "Use Linear for backgrounds and geometric effects, Radial for glows, highlights, and spherical objects!"
+            }
+        ];
+
+        // REMEDIATION QUESTIONS - If struggling (score < 2/3 on starters)
+        const remediationQuestions = [
+            {
+                question: "VOCABULARY: What is a Color Stop?",
+                options: [
+                    "A button that pauses the gradient",
+                    "A square-shaped point where you set a specific color",
+                    "The final color in a gradient",
+                    "A panel for choosing colors"
+                ],
+                correct: 1,
+                explanation: "A Color Stop is a square-shaped point on the gradient where you set a specific color. You can drag it to reposition and double-click to change its color.",
+                tip: "Color stops are your control points - the more you add, the more complex your gradient can be!"
+            },
+            {
+                question: "VOCABULARY: What does the 'G' keyboard shortcut do?",
+                options: [
+                    "Opens the Gradient Panel",
+                    "Creates a new gradient",
+                    "Activates the Gradient Tool",
+                    "Applies a gradient to selected objects"
+                ],
+                correct: 2,
+                explanation: "Pressing 'G' activates the Gradient Tool, allowing you to apply and adjust gradients on shapes.",
+                tip: "Learning keyboard shortcuts like 'G' will speed up your workflow significantly!"
+            },
+            {
+                question: "Which menu opens the Gradient Panel?",
+                options: [
+                    "File > Gradient",
+                    "Window > Gradient",
+                    "Edit > Gradient",
+                    "Object > Gradient"
+                ],
+                correct: 1,
+                explanation: "The Gradient Panel is accessed through Window > Gradient. This is your control center for all gradient settings.",
+                tip: "The Gradient Panel lets you fine-tune every aspect of your gradients - keep it open while working!"
+            },
+            {
+                question: "VOCABULARY: What is the Gradient Panel used for?",
+                options: [
+                    "Drawing gradient shapes",
+                    "Your control center for all gradient settings",
+                    "Saving gradient presets only",
+                    "Converting images to gradients"
+                ],
+                correct: 1,
+                explanation: "The Gradient Panel (Window > Gradient) is your control center for all gradient settings - type, angle, color stops, and more.",
+                tip: "Think of the Gradient Panel as mission control for your gradient effects!"
+            },
+            {
+                question: "Which types of objects can you apply gradients to?",
+                options: [
+                    "Only shapes",
+                    "Only text",
+                    "Shapes, Lines, and Text",
+                    "Only vector shapes"
+                ],
+                correct: 2,
+                explanation: "You can apply gradients to all three types of objects in Illustrator: Shapes, Lines, and Text. This gives you maximum creative flexibility!",
+                tip: "Gradients aren't just for backgrounds - try them on logos, text headers, and decorative elements!"
+            },
+            {
+                question: "What does a 0-degree angle create in a Linear gradient?",
+                options: [
+                    "Top to bottom blend",
+                    "Horizontal left to right blend",
+                    "Diagonal blend",
+                    "Circular blend"
+                ],
+                correct: 1,
+                explanation: "An angle of 0 degrees creates a horizontal gradient that blends from left to right. Think of it as the baseline position.",
+                tip: "Angle basics: 0° = horizontal, -90° = vertical (top down), 90° = vertical (bottom up)!"
+            },
+            {
+                question: "VOCABULARY: What is the Gradient Annotator?",
+                options: [
+                    "A note-taking tool for gradients",
+                    "An interactive line/circle on your shape that lets you adjust visually",
+                    "A list of all gradients in your file",
+                    "A gradient preset library"
+                ],
+                correct: 1,
+                explanation: "The Gradient Annotator is an interactive line or circle that appears ON your shape, allowing you to adjust the gradient visually by dragging.",
+                tip: "The Gradient Annotator appears when you select a gradient - it's your visual adjustment tool!"
+            }
+        ];
+
+        // STANDARD QUESTIONS - If doing okay (score 2-3/3 on starters)
+        const standardQuestions = [
+            {
+                question: "How do you apply a gradient to text while keeping it editable?",
+                options: [
+                    "Use the Gradient Tool directly on the text",
+                    "Open the Appearance Palette and add a new fill",
+                    "Convert text to outlines first",
+                    "Use the Color Panel"
+                ],
+                correct: 1,
+                explanation: "To apply gradients to text and keep it editable, you must open the Appearance Palette, add a new fill, and apply the gradient there. This preserves the text's editability.",
+                tip: "Never convert text to outlines until you're 100% done editing - use the Appearance Palette to stay flexible!"
+            },
+            {
+                question: "What angle setting creates a top-to-bottom gradient effect?",
+                options: [
+                    "0 degrees",
+                    "45 degrees",
+                    "-90 degrees",
+                    "180 degrees"
+                ],
+                correct: 2,
+                explanation: "An angle of -90 degrees creates a top-to-bottom gradient, like a real sunset. The lesson shows this in the Sunset Sky example: 'Try angle: 0 for horizontal, or -90 for top-to-bottom'.",
+                tip: "Angle: 0° = horizontal (left to right), -90° = vertical (top to bottom). Experiment with different angles!"
+            },
+            {
+                question: "Where do you switch from a Linear to a Radial gradient?",
+                options: [
+                    "In the Color Panel",
+                    "In the Gradient Panel's Type dropdown",
+                    "Using the Gradient Tool while holding Shift",
+                    "In the Properties Panel"
+                ],
+                correct: 1,
+                explanation: "To switch to Radial, you use the Gradient Panel and change the Type dropdown from 'Linear' to 'Radial'. This makes your colors blend from the center outward.",
+                tip: "The Gradient Panel (Window > Gradient) is your control center for all gradient settings!"
+            },
+            {
+                question: "What are the THREE types of gradients available in Illustrator?",
+                options: [
+                    "Linear, Curved, and Diagonal",
+                    "Simple, Complex, and Advanced",
+                    "Linear, Radial, and Freeform",
+                    "Horizontal, Vertical, and Circular"
+                ],
+                correct: 2,
+                explanation: "The lesson states there are three types of gradients: Linear, Radial, and Freeform. Your lesson focuses on Linear and Radial, with Freeform being the advanced option.",
+                tip: "Freeform gradients let you place color points anywhere for organic, flowing transitions - try them when you're ready to level up!"
+            },
+            {
+                question: "What is the recommended canvas size for a phone wallpaper project?",
+                options: [
+                    "1920x1080px",
+                    "1080x1920px",
+                    "3000x3000px",
+                    "1024x768px"
+                ],
+                correct: 1,
+                explanation: "For the phone wallpaper project, the lesson specifies 1080x1920px - this is portrait orientation, which is standard for phone screens.",
+                tip: "Remember: phones are vertical! Portrait dimensions have height larger than width."
+            },
+            {
+                question: "How do you add a third color to a gradient?",
+                options: [
+                    "Click on the Gradient Panel's Type dropdown",
+                    "Click anywhere on the gradient slider to add a color stop",
+                    "Use the Color Panel to add colors",
+                    "Hold Shift and click the gradient"
+                ],
+                correct: 1,
+                explanation: "To add more colors to a gradient, simply click anywhere on the gradient slider to add a new color stop. You can then double-click it to change its color.",
+                tip: "The Neon Sign example suggests adding a white stop in the middle for extra glow - try it!"
+            },
+            {
+                question: "Which gradient type is perfect for creating spotlight effects?",
+                options: [
+                    "Linear gradient",
+                    "Freeform gradient",
+                    "Radial gradient",
+                    "Diagonal gradient"
+                ],
+                correct: 2,
+                explanation: "Radial gradients blend outward from a center point in circles - making them perfect for glows and spotlights, as mentioned in the lesson.",
+                tip: "Use radial gradients for: glows, orbs, anime eye highlights, sun effects, and any circular light source!"
+            }
+        ];
+
+        // ADVANCED QUESTIONS - If acing it (score 3/3 on starters)
+        const advancedQuestions = [
+            {
+                question: "ADVANCED: You want to create a neon glow text effect. What's the BEST approach?",
+                options: [
+                    "Use a single linear gradient from cyan to magenta",
+                    "Apply a linear gradient with a white color stop in the middle for intensity",
+                    "Use a radial gradient on the text",
+                    "Apply multiple overlapping gradients"
+                ],
+                correct: 1,
+                explanation: "The lesson specifically mentions for the Neon Sign Glow: 'Add a third stop in the middle with white for extra glow!' This creates that intense bright center that makes neon pop.",
+                tip: "White or bright color stops in the middle create that signature neon intensity - it's all about the highlight!"
+            },
+            {
+                question: "ADVANCED: A student's gradient looks chunky instead of smooth. What's likely wrong?",
+                options: [
+                    "They're using too many color stops",
+                    "They need to increase the document resolution",
+                    "They're viewing in Outline mode",
+                    "Color stops are too close together"
+                ],
+                correct: 2,
+                explanation: "If a gradient looks chunky or banded instead of smooth, the student is likely viewing in Outline mode (Cmd/Ctrl+Y). Switch to Preview mode to see the smooth gradient.",
+                tip: "Outline mode shows paths only - always check your work in Preview mode for accurate gradient appearance!"
+            },
+            {
+                question: "ADVANCED: For a gaming logo with radial glow, where should the white color stop be positioned?",
+                options: [
+                    "At the outer edge",
+                    "In the center",
+                    "Evenly spaced throughout",
+                    "It doesn't matter"
+                ],
+                correct: 1,
+                explanation: "Looking at the Glowing Orb example in the lesson: 'white center > blue > dark blue edge' - the white is at the center for maximum glow intensity. This mimics how light works in nature.",
+                tip: "Radial glows follow real light physics: bright center (white) fading to darker edges. Think sun, light bulbs, health orbs!"
+            },
+            {
+                question: "ADVANCED: You're creating an album cover (3000x3000px). Why this specific size?",
+                options: [
+                    "It's the standard print size for albums",
+                    "Streaming services require square artwork at this resolution",
+                    "It's easier to work with in Illustrator",
+                    "It matches Photoshop's default canvas"
+                ],
+                correct: 1,
+                explanation: "3000x3000px is the industry standard for album artwork required by streaming platforms like Spotify and Apple Music. It's square for consistency across platforms.",
+                tip: "Always design album art square and at high resolution - streaming services are strict about specs!"
+            },
+            {
+                question: "ADVANCED: A student wants to create a sunset with 5 colors blending smoothly. What's the optimal approach?",
+                options: [
+                    "Use 5 separate rectangles with different colors",
+                    "Create one linear gradient at -90° with 5 color stops",
+                    "Use a radial gradient with 5 color stops",
+                    "Layer multiple semi-transparent gradients"
+                ],
+                correct: 1,
+                explanation: "A single linear gradient at -90° (top-to-bottom) with 5 color stops creates the smoothest sunset effect. The lesson's sunset example uses this exact technique: 'orange > pink > purple (vertical)'.",
+                tip: "Real sunsets blend vertically! Use -90° angle and space your warm colors (orange, pink, purple) evenly."
+            },
+            {
+                question: "ADVANCED: What's the advantage of using Appearance Palette for text gradients instead of converting to outlines?",
+                options: [
+                    "It creates smaller file sizes",
+                    "The text remains editable and searchable",
+                    "Gradients render faster",
+                    "You can use more colors"
+                ],
+                correct: 1,
+                explanation: "Using the Appearance Palette keeps text editable - you can still fix typos, change fonts, or adjust spacing. Once converted to outlines, text becomes permanent shapes.",
+                tip: "Editability = flexibility! Only convert to outlines when sending final files to print or when absolutely necessary."
+            },
+            {
+                question: "ADVANCED: For a glowing orb effect (like game health orbs), which color progression creates the most realistic result?",
+                options: [
+                    "Dark edge > bright center",
+                    "Bright edge > dark center",
+                    "Evenly distributed brightness",
+                    "Random color placement"
+                ],
+                correct: 0,
+                explanation: "The lesson shows the Glowing Orb example: 'white center > blue > dark blue edge.' This mimics real light sources - brightest at the center, fading to darker edges.",
+                tip: "Game developers use this technique for ALL glowing objects: orbs, magic effects, energy shields. Master this!"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let quizPath = []; // Track the path taken
+        let answered = false;
+        let starterScore = 0;
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function buildQuizPath() {
+            // Always start with the 3 starter questions
+            quizPath = [...starterQuestions];
+            
+            // After 3 questions, determine path based on performance
+            // Score < 2/3 = Remediation path (easier questions)
+            // Score = 2/3 = Standard path (medium questions)  
+            // Score = 3/3 = Advanced path (harder questions)
+            
+            if (starterScore < 2) {
+                // Struggling - give remediation questions
+                quizPath = quizPath.concat(shuffleArray(remediationQuestions).slice(0, 7));
+            } else if (starterScore === 2) {
+                // Doing okay - give standard questions
+                quizPath = quizPath.concat(shuffleArray(standardQuestions).slice(0, 7));
+            } else {
+                // Acing it - give advanced questions
+                quizPath = quizPath.concat(shuffleArray(advancedQuestions).slice(0, 7));
+            }
+        }
+
+        function startQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            starterScore = 0;
+            answered = false;
+            quizPath = [...starterQuestions]; // Start with just starters
+            document.getElementById('results').classList.remove('show');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            answered = false;
+            const question = quizPath[currentQuestion];
+            const quizContent = document.getElementById('quizContent');
+            
+            const progress = ((currentQuestion + 1) / quizPath.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            quizContent.innerHTML = `
+                <div class="question-container">
+                    <div class="question-header">
+                        <div class="question-number">Question ${currentQuestion + 1} of ${quizPath.length}</div>
+                    </div>
+                    <div class="question-text">${question.question}</div>
+                    <div class="options">
+                        ${question.options.map((option, index) => `
+                            <div class="option" onclick="selectAnswer(${index})">
+                                <div class="option-letter">${String.fromCharCode(65 + index)}</div>
+                                <div>${option}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="feedback" id="feedback"></div>
+                    <button class="next-button" id="nextButton" onclick="nextQuestion()">
+                        ${currentQuestion === quizPath.length - 1 ? 'See Results' : 'Next Question'} →
+                    </button>
+                </div>
+            `;
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (answered) return;
+            
+            answered = true;
+            const question = quizPath[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            const feedback = document.getElementById('feedback');
+            const nextButton = document.getElementById('nextButton');
+            
+            options.forEach((option, index) => {
+                option.classList.add('disabled');
+                if (index === question.correct) {
+                    option.classList.add('correct');
+                } else if (index === selectedIndex) {
+                    option.classList.add('incorrect');
+                }
+            });
+
+            const isCorrect = selectedIndex === question.correct;
+            if (isCorrect) {
+                score++;
+                // Track starter question performance
+                if (currentQuestion < starterQuestions.length) {
+                    starterScore++;
+                }
+            }
+
+            feedback.className = `feedback ${isCorrect ? 'correct' : 'incorrect'} show`;
+            feedback.innerHTML = `
+                <div class="feedback-title">
+                    ${isCorrect ? '✓ Correct!' : '✗ Incorrect'}
+                </div>
+                <div class="feedback-text">
+                    ${question.explanation}
+                </div>
+                <div class="feedback-tip">
+                    <strong>💡 Pro Tip:</strong> ${question.tip}
+                </div>
+            `;
+
+            nextButton.classList.add('show');
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            
+            // After completing starter questions, build the adaptive path
+            if (currentQuestion === starterQuestions.length) {
+                buildQuizPath();
+                showTransitionMessage();
+                return;
+            }
+            
+            if (currentQuestion < quizPath.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showTransitionMessage() {
+            const quizContent = document.getElementById('quizContent');
+            let transitionText, emoji;
+            
+            if (starterScore < 2) {
+                emoji = "📚";
+                transitionText = "Let's review some key concepts to build your foundation!";
+            } else if (starterScore === 2) {
+                emoji = "📖";
+                transitionText = "You're doing well! Let's continue with some standard questions.";
+            } else {
+                emoji = "🔥";
+                transitionText = "Great start! Ready for some advanced challenges?";
+            }
+
+            quizContent.innerHTML = `
+                <div class="transition-message">
+                    <h3>${emoji} Quiz Adapting to Your Level ${emoji}</h3>
+                    <p>${transitionText}</p>
+                    <button class="next-button show" onclick="continueAfterTransition()" style="margin-top: 20px;">
+                        Continue →
+                    </button>
+                </div>
+            `;
+        }
+
+        function continueAfterTransition() {
+            showQuestion();
+        }
+
+        function showResults() {
+            const percentage = Math.round((score / quizPath.length) * 100);
+            let message, emoji, pathMessage, pathType;
+
+            // Determine which path was taken
+            if (starterScore < 2) {
+                pathMessage = "📚 <strong>Remediation Path:</strong> You got some foundational practice. Review the lesson and try again to unlock harder questions!";
+                pathType = "Remediation";
+            } else if (starterScore === 2) {
+                pathMessage = "📖 <strong>Standard Path:</strong> You demonstrated solid understanding of the core concepts!";
+                pathType = "Standard";
+            } else {
+                pathMessage = "🔥 <strong>Advanced Path:</strong> You aced the basics and tackled the challenging questions!";
+                pathType = "Advanced";
+            }
+
+            if (percentage === 100) {
+                message = "Perfect Score! You're a Gradient Master! 🎨✨";
+                emoji = "🏆";
+            } else if (percentage >= 80) {
+                message = "Excellent work! You really know your gradients! 🌟";
+                emoji = "🎯";
+            } else if (percentage >= 60) {
+                message = "Good job! Keep practicing those gradient techniques! 💪";
+                emoji = "👍";
+            } else {
+                message = "Keep learning! Review the lesson and try again! 📚";
+                emoji = "💡";
+            }
+
+            // Prepare student identifier
+            const studentIdentifier = studentInfo.email || studentInfo.name || 'Anonymous';
+            const sourceMessage = studentInfo.source === 'google' ? 'Detected from Google Sign-In' :
+                                 studentInfo.source === 'url' ? 'Auto-filled from link' :
+                                 studentInfo.source === 'localStorage' ? 'Remembered from previous quiz' : 
+                                 'Name not detected';
+
+            document.getElementById('quizContent').style.display = 'none';
+            const results = document.getElementById('results');
+            results.innerHTML = `
+                <h2>${emoji} Quiz Complete! ${emoji}</h2>
+                <div class="score-display">${score}/${quizPath.length}</div>
+                <div class="results-message">${message}</div>
+                <div style="font-size: 1.2em; color: #667eea; margin: 20px 0;">
+                    You scored <strong>${percentage}%</strong>
+                </div>
+                <div style="background: linear-gradient(135deg, #f7fafc, #edf2f7); padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #667eea;">
+                    ${pathMessage}
+                </div>
+                <div style="background: white; padding: 20px; border-radius: 12px; margin: 20px 0; border: 2px solid #e2e8f0;">
+                    <h3 style="margin-bottom: 10px; color: #2d3748;">📤 Score Submission</h3>
+                    <p style="color: #4a5568; margin-bottom: 10px;">
+                        <strong>Student:</strong> ${studentIdentifier}<br>
+                        <small style="color: #718096;">${sourceMessage}</small>
+                    </p>
+                    <p id="submitStatus" style="margin-top: 15px; padding: 12px; background: #f7fafc; border-radius: 8px; font-size: 0.95em; color: #667eea;">
+                        📤 Submitting your score automatically...
+                    </p>
+                </div>
+            `;
+            results.classList.add('show');
+
+            // Automatically submit score after a brief delay (to show the UI)
+            setTimeout(() => {
+                submitScore(pathType, score, quizPath.length, percentage, studentIdentifier);
+            }, 500);
+        }
+
+        function submitScore(pathType, score, totalQuestions, percentage, studentIdentifier) {
+            const statusEl = document.getElementById('submitStatus');
+            
+            if (!studentIdentifier || studentIdentifier === 'Anonymous') {
+                statusEl.style.color = '#ed8936';
+                statusEl.innerHTML = '⚠️ Could not detect student name. Score recorded as "Anonymous".<br><small>Next time, make sure you\'re signed into Google or use the custom link provided by your teacher.</small>';
+                // Still submit even if anonymous
+            } else {
+                statusEl.style.color = '#667eea';
+                statusEl.textContent = '📤 Submitting your score...';
+            }
+
+            // Save to localStorage for future quizzes (if not anonymous)
+            if (studentIdentifier !== 'Anonymous') {
+                saveStudentInfo(studentIdentifier, '');
+            }
+
+            // Get current date/time
+            const timestamp = new Date().toLocaleString();
+
+            // OPTION 1: GOOGLE FORMS SUBMISSION
+            // Instructions for teacher:
+            // 1. Create a Google Form with these fields (Short Answer):
+            //    - Student Name
+            //    - Score
+            //    - Total Questions  
+            //    - Percentage
+            //    - Path Type
+            //    - Date/Time
+            // 2. Click "Send" > Get pre-filled link > Fill in dummy data > Copy the long URL
+            // 3. Replace GOOGLE_FORM_ACTION_URL below with your form's action URL
+            // 4. Replace entry.XXXXX with the actual entry IDs from your form URL
+            
+            const GOOGLE_FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdukdIzF7jt3c1vkasFMBglNKVMXYUsn4J6GaS2Mn_M4ofG8g/formResponse';
+
+const formData = new FormData();
+formData.append('entry.366340186', studentIdentifier);
+formData.append('entry.960786998', `${score}/${totalQuestions}`);
+formData.append('entry.1997167952', `${percentage}%`);
+formData.append('entry.1996823181', pathType);
+formData.append('entry.1817323855', timestamp);
+
+            // Submit to Google Form (hidden iframe submission)
+            if (GOOGLE_FORM_ACTION_URL !== 'YOUR_GOOGLE_FORM_ACTION_URL_HERE') {
+                fetch(GOOGLE_FORM_ACTION_URL, {
+                    method: 'POST',
+                    body: formData,
+                    mode: 'no-cors'
+                }).then(() => {
+                    statusEl.style.color = '#48bb78';
+                    statusEl.textContent = '✅ Score submitted successfully!';
+                }).catch(() => {
+                    statusEl.style.color = '#48bb78';
+                    statusEl.textContent = '✅ Score submitted successfully!';
+                });
+            } else {
+                // If form not set up, use Google Sheets Web App instead
+                submitToGoogleSheets(studentIdentifier, score, totalQuestions, percentage, pathType, timestamp, statusEl);
+            }
+        }
+
+        function submitToGoogleSheets(studentIdentifier, score, totalQuestions, percentage, pathType, timestamp, statusEl) {
+            // OPTION 2: GOOGLE APPS SCRIPT WEB APP
+            // Instructions for teacher:
+            // 1. Go to script.google.com
+            // 2. Create new project, paste the code from the comments below
+            // 3. Deploy as Web App, set access to "Anyone"
+            // 4. Copy the Web App URL and paste it in GOOGLE_SCRIPT_URL below
+            
+            const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+            
+            if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
+                statusEl.style.color = '#f56565';
+                statusEl.innerHTML = '⚠️ Teacher needs to set up score collection. <br>Please screenshot your results and email to your teacher.';
+                return;
+            }
+
+            const data = {
+                studentName: studentIdentifier,
+                score: score,
+                totalQuestions: totalQuestions,
+                percentage: percentage,
+                pathType: pathType,
+                timestamp: timestamp
+            };
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            }).then(() => {
+                statusEl.style.color = '#48bb78';
+                statusEl.textContent = '✅ Score submitted successfully!';
+            }).catch(() => {
+                statusEl.style.color = '#48bb78';
+                statusEl.textContent = '✅ Score submitted successfully!';
+            });
+        }
+
+        /*
+        GOOGLE APPS SCRIPT CODE (for Option 2):
+        Copy this code to script.google.com and deploy as Web App:
+
+        function doPost(e) {
+          var sheet = SpreadsheetApp.openById('YOUR_SPREADSHEET_ID').getActiveSheet();
+          var data = JSON.parse(e.postData.contents);
+          
+          sheet.appendRow([
+            data.timestamp,
+            data.studentName,
+            data.score + '/' + data.totalQuestions,
+            data.percentage + '%',
+            data.pathType
+          ]);
+          
+          return ContentService.createTextOutput('Success');
+        }
+
+        To set up:
+        1. Create a Google Sheet
+        2. Copy the sheet ID from the URL
+        3. Replace YOUR_SPREADSHEET_ID above
+        4. Deploy as Web App (Execute as: Me, Access: Anyone)
+        5. Copy the Web App URL to GOOGLE_SCRIPT_URL in the HTML file
+        */
+
+        // Start the quiz when page loads
+        startQuiz();
+    </script>
+</body>
+</html>
